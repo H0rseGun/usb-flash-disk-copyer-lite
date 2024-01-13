@@ -1,11 +1,13 @@
 import pystray
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageTk
+import sys
 import os
 import shutil
 import time
 import threading
 import string
 import ctypes
+import tkinter as tk
 from pystray import MenuItem as item
 
 # 退出标志
@@ -63,19 +65,30 @@ def create_image():
     return image
 
 
+
 def on_exit(icon, item):
     global exit_flag
     exit_flag = True
     icon.stop()
-
+    os._exit(0)
 
 # 创建托盘图标
 def create_tray_icon():
     icon_image = create_image()
     icon = pystray.Icon("USB Flash Disk Copyer", icon_image, "USB Flash Disk Copyer", menu=pystray.Menu(
+        item('关于', show_about),
         item('退出', on_exit)
     ))
     return icon
+
+# 显示关于窗口
+def show_about(icon, item):
+    about_window = tk.Toplevel()
+    about_window.title("关于")
+    about_window.geometry("400x400")
+
+    about_label = tk.Label(about_window, text="USB Flash Disk Copyer\n版本: 1.14.514 Release\n作者: H0rseGun\n开源地址: https://github.com/H0rseGun/usb-flash-disk-copyer-lite")
+    about_label.pack()
 
 if __name__ == "__main__":
     icon = create_tray_icon()
@@ -88,3 +101,7 @@ if __name__ == "__main__":
     icon_thread.start()
     drive_thread.start()
 
+    # 创建 Tkinter 主循环
+    root = tk.Tk()
+    root.withdraw()
+    root.mainloop()
